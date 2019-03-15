@@ -98,8 +98,7 @@ namespace lab01
                 string startcommand = args[0];                
                 if (startcommand.StartsWith("-f")||startcommand.StartsWith("-F")) //captial insensitive
                 {
-                    string filePath = args[0].Substring(2);
-                    Console.WriteLine(filePath);
+                    string filePath = args[0].Substring(2);                   
                     FileInfo fileinfo = new FileInfo(filePath);
 
                     // find whether the file exists
@@ -115,6 +114,7 @@ namespace lab01
                         QrEncoder qrEncoder = new QrEncoder(ErrorCorrectionLevel.M);
                         for (int r = 0; r < rows; r++)
                         {
+                            // find whether the input data are numbers
                             if (correctInput(stringData[r]))
                             {
                                 photoname[r] = string.Format("{0:D3}", r) + stringData[r].Substring(0, 4) + ".png";
@@ -122,9 +122,9 @@ namespace lab01
                                 QrCode qrCode = qrEncoder.Encode(stringData[r]);
                                 consoleOutput(qrCode);
                                 GraphicsRenderer renderer = new GraphicsRenderer(new FixedModuleSize(30, QuietZoneModules.Four), Brushes.Black, Brushes.White);
-                                renderer.WriteToStream(qrCode.Matrix, ImageFormat.Png, resultFile[r]);
-                                Console.WriteLine("success in result {0}", r);
+                                renderer.WriteToStream(qrCode.Matrix, ImageFormat.Png, resultFile[r]);                                
                             }
+
                             else
                             {
                                 Console.WriteLine("Invalid input of txt.\n'-help' for some help on readme.md");
