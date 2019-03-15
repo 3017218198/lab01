@@ -92,56 +92,73 @@ namespace lab01
         /// <param name="args"><command line arguments/param>
         static void Main(string[] args)
         {
-            // find the input command
-            string startcommand = args[0];
-            if (startcommand == "-f")
+            if (args.Length == 1) // the number of command line arguments is 1
             {
-                string filePath = args[1];
-                FileInfo fileinfo = new FileInfo(filePath);
-
-                // find whether the file exists
-                if (fileinfo.Exists)
+                // find the input command
+                string startcommand = args[0];                
+                if (startcommand.StartsWith("-f")||startcommand.StartsWith("-F")) //captial insensitive
                 {
-                    int rows = intFileLines(filePath); // read the rows of txt
-                    string[] stringData = new string[100]; // string array used for storage
-                    readFileByLines(filePath, ref stringData, rows); // read txt data by lines
+                    string filePath = args[0].Substring(2);
+                    Console.WriteLine(filePath);
+                    FileInfo fileinfo = new FileInfo(filePath);
 
-                    FileStream[] resultFile = new FileStream[rows]; // declear qrcode phote files array
-                    string[] photoname = new string[rows];
-
-                    QrEncoder qrEncoder = new QrEncoder(ErrorCorrectionLevel.M);
-                    for (int r = 0; r < rows; r++)
+                    // find whether the file exists
+                    if (fileinfo.Exists)
                     {
-                        if (correctInput(stringData[r]))
-                        {
-                            photoname[r] = "result" + r + ".png";
-                            resultFile[r] = new FileStream(photoname[r], FileMode.Create);
-                            QrCode qrCode = qrEncoder.Encode(stringData[r]);
-                            consoleOutput(qrCode);
-                            GraphicsRenderer renderer = new GraphicsRenderer(new FixedModuleSize(30, QuietZoneModules.Four), Brushes.Black, Brushes.White);
-                            renderer.WriteToStream(qrCode.Matrix, ImageFormat.Png, resultFile[r]);
-                            Console.WriteLine("success");
-                        }
-                        else
-                        {
-                            Console.WriteLine("invalid input");
-                            return;
-                        }
-                    }
+                        int rows = intFileLines(filePath); // read the rows of txt
+                        string[] stringData = new string[100]; // string array used for storage
+                        readFileByLines(filePath, ref stringData, rows); // read txt data by lines
 
+                        FileStream[] resultFile = new FileStream[rows]; // declear qrcode phote files array
+                        string[] photoname = new string[rows]; 
+
+                        QrEncoder qrEncoder = new QrEncoder(ErrorCorrectionLevel.M);
+                        for (int r = 0; r < rows; r++)
+                        {
+                            if (correctInput(stringData[r]))
+                            {
+                                photoname[r] = string.Format("{0:D3}", r) + stringData[r].Substring(0, 4) + ".png";
+                                resultFile[r] = new FileStream(photoname[r], FileMode.Create);
+                                QrCode qrCode = qrEncoder.Encode(stringData[r]);
+                                consoleOutput(qrCode);
+                                GraphicsRenderer renderer = new GraphicsRenderer(new FixedModuleSize(30, QuietZoneModules.Four), Brushes.Black, Brushes.White);
+                                renderer.WriteToStream(qrCode.Matrix, ImageFormat.Png, resultFile[r]);
+                                Console.WriteLine("success in result {0}", r);
+                            }
+                            else
+                            {
+                                Console.WriteLine("Invalid input of txt.\n'-help' for some help on readme.md");
+                                return;
+                            }
+                        }
+
+                    }
+                    
+                    else
+                    {
+                        Console.WriteLine("file cannot be found");
+                        return;
+                    }
                 }
-                else
+
+                else if (startcommand == "-help") // get help from readme.md, captial sensitive
                 {
-                    Console.WriteLine("file cannot be found");
+                    Console.WriteLine("https://github.com/3017218198/lab01");
+                    return;
+                }
+
+                else // exception (invalid argument)
+                {
+                    Console.WriteLine("Invalid command.\n'-help' for some help on readme.md");
                     return;
                 }
             }
-            
-            else
+
+            else // exception (invalid number of command line arguments)
             {
-                Console.WriteLine("wrong command");
+                Console.WriteLine("Invalid input, the number of arguments should be 1.\n'-help' for some help on readme.md");
+                return;
             }
-           
         }
     }
 }
