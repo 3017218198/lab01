@@ -1,5 +1,5 @@
 # lab01
-C# lab01, by LuYuan, 2019-3-14
+C# lab01, by LuYuan, 2019-3-14, lasts 5 hours, 164 lines
 
 ## Introduction
 1. This application is used to create qrcode for numerous cellphone numbers (11 digits)
@@ -17,3 +17,6 @@ C# lab01, by LuYuan, 2019-3-14
 1. the default txt file is test.txt
 2. the drfault data is 17822007566, 17822007567, 17822007568
 3. screencut (by vs complier) ![screen ](screencut/0001782.png) ![screen ](screencut/0011782.png) ![screen ](screencut/0021782.png) 
+
+## xmind
+![screen ](screencut/xmind.png)
