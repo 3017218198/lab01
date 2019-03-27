@@ -16,7 +16,7 @@ C# lab01, by LuYuan, 2019-3-14, lasts 5 hours, 164 lines
 ## Change Log
 #### first version(a941dcb), released in 14:54, March 15th, 2019
 1. the default txt file is test.txt
-2. the drfault data is 17822007566, 17822007567, 17822007568
+2. the default data is 17822007566, 17822007567, 17822007568
 3. screencut (by vs complier) ![screen ](screencut/0001782.png) ![screen ](screencut/0011782.png) ![screen ](screencut/0021782.png) 
 
 #### second version(8146729), released in 9:20, March 27th, 2019
