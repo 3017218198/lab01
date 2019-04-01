@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Data.OleDb;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -120,26 +121,37 @@ namespace lab01
             }
         }
 
-        public static void readDataFromExcel(string path, ref string[] stringData, int rows)
+        /// <summary>
+        /// read data from excel
+        /// </summary>
+        /// <param name="path"><the path of excel file/param>
+        /// <param name="stringData"><string array to store data, which is pass by reference/param>
+        /// <param name="rows"><the rows of data, which is pass by reference/param>
+        public static void readDataFromExcel(string path, ref string[] stringData, ref int rows)
         {
-            string con =
-               "Provider=Microsoft.Jet.OLEDB.4.0; Data Source= " + path + ";" +
-               @"Extended Properties='Excel 8.0;HDR=Yes;'";
-            using (OleDbConnection connection = new OleDbConnection(con))
+
+            string connstring = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + path + ";Extended Properties='Excel 8.0;HDR=NO;IMEX=1';";
+            using (OleDbConnection conn = new OleDbConnection(connstring))
             {
-                connection.Open();
-                OleDbCommand command = new OleDbCommand("select * from [sheet1$]", connection);
-                using (OleDbDataReader dr = command.ExecuteReader())
+                conn.Open();
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("connection success");
+                Console.ResetColor();
+                DataTable sheetsName = conn.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, new object[] { null, null, null, "Table" });
+                string firstSheetName = sheetsName.Rows[0][2].ToString(); // get the name of first sheet
+                string sql = string.Format("SELECT * FROM [{0}]", firstSheetName);
+                OleDbDataAdapter adapter = new OleDbDataAdapter(sql, connstring);
+                DataSet set = new DataSet();
+                adapter.Fill(set);
+                rows = set.Tables[0].Rows.Count;
+                DataTable dataTable = set.Tables[0];
+                for (int i = 0; i < rows; i++)
                 {
-                    while (dr.Read())
-                    {
-                        var row1Col0 = dr[0];
-                        
-                        Console.WriteLine(row1Col0);
-                    }
-                    
+                    stringData[i] = dataTable.Rows[i].ItemArray[0].ToString();
                 }
+                conn.Close();
             }
+
         }
 
         /// <summary>
@@ -234,6 +246,15 @@ namespace lab01
                     string[] stringData = new string[100]; // string array used for storage
                     int rows = 0; // number of string
                     readDataFromSQL(server, port, database, user, password,table, ref stringData, ref rows);
+                    photoOutput(rows, stringData);
+                }
+                
+                else if (startcommand.StartsWith("-EXCEL"))
+                {
+                    string excelPath = startcommand.Substring(6);
+                    string[] stringData = new string[100]; // string array used for storage
+                    int rows = 0; // number of string
+                    readDataFromExcel(excelPath, ref stringData, ref rows);
                     photoOutput(rows, stringData);
                 }
 
