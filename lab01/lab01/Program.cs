@@ -18,7 +18,7 @@ namespace lab01
         /// </summary>
         /// <param name="path"><path of the file/param>
         /// <returns><lines of the txt file/returns>
-        public static int intFileLines(string path)
+        public static int IntFileLines(string path)
         {
             int lines = 0;  // lines of txt file
             FileStream fs = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite);
@@ -39,7 +39,7 @@ namespace lab01
         /// <param name="path"><path of the file/param>
         /// <param name="stringData"><string arrays used for storeage/param>
         /// <param name="rows"><lines of the txt file/param>
-        public static void readFileByLines(string path, ref string[] stringData, int rows)
+        public static void ReadFileByLines(string path, ref string[] stringData, int rows)
         {
             StreamReader sr = new StreamReader(path);
             for (int i = 0; i < rows; i++)
@@ -53,7 +53,7 @@ namespace lab01
         /// </summary>
         /// <param name="s"><the string to be checked/param>
         /// <returns></returns>
-        public static bool correctInput(string s)
+        public static bool CorrectInput(string s)
         {
             char[] charArray = s.ToCharArray();
             bool correctInput = true;
@@ -75,7 +75,7 @@ namespace lab01
         /// print qrcode in the console
         /// </summary>
         /// <param name="qrCode"><qrcode/param>
-        public static void consoleOutput(QrCode qrCode)
+        public static void ConsoleOutput(QrCode qrCode)
         {
             for (int j = 0; j < qrCode.Matrix.Width; j++)
             {
@@ -85,6 +85,7 @@ namespace lab01
                     Console.Write(charToPrint);
                 }
                 Console.WriteLine();
+                Console.WriteLine();
             }
         }
         
@@ -93,7 +94,7 @@ namespace lab01
         /// </summary>
         /// <param name="rows"><number of pictures to be created/param>
         /// <param name="stringData"><string array to store data/param>
-        public static void photoOutput(int rows, string[] stringData)
+        public static void PhotoOutput(int rows, string[] stringData)
         {
             FileStream[] resultFile = new FileStream[rows]; // declear qrcode phote files array
             string[] photoname = new string[rows];
@@ -102,12 +103,12 @@ namespace lab01
             for (int r = 0; r < rows; r++)
             {
                 // if the input data are valid (numbers), create photoes
-                if (correctInput(stringData[r]))
+                if (CorrectInput(stringData[r]))
                 {
                     photoname[r] = string.Format("{0:D3}", r) + stringData[r].Substring(0, 4) + ".png";
                     resultFile[r] = new FileStream(photoname[r], FileMode.Create);
                     QrCode qrCode = qrEncoder.Encode(stringData[r]);
-                    consoleOutput(qrCode);
+                    ConsoleOutput(qrCode);
                     GraphicsRenderer renderer = new GraphicsRenderer(new FixedModuleSize(30, QuietZoneModules.Four), Brushes.Black, Brushes.White);
                     renderer.WriteToStream(qrCode.Matrix, ImageFormat.Png, resultFile[r]);
                 }
@@ -127,7 +128,7 @@ namespace lab01
         /// <param name="path"><the path of excel file/param>
         /// <param name="stringData"><string array to store data, which is pass by reference/param>
         /// <param name="rows"><the rows of data, which is pass by reference/param>
-        public static void readDataFromExcel(string path, ref string[] stringData, ref int rows)
+        public static void ReadDataFromExcel(string path, ref string[] stringData, ref int rows)
         {
 
             string connstring = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + path + ";Extended Properties='Excel 8.0;HDR=NO;IMEX=1';";
@@ -165,7 +166,7 @@ namespace lab01
         /// <param name="table"><数据表/param>
         /// <param name="stringData"><string array to store data, which is pass by reference/param>
         /// <param name="rows"><the rows of data, which is pass by reference/param>
-        public static void readDataFromSQL(string server, string port, string database, string user, string password, string table, ref string[] stringData, ref int rows)
+        public static void ReadDataFromSQL(string server, string port, string database, string user, string password, string table, ref string[] stringData, ref int rows)
         {
             string conStr = "server=" + server + ";port=" + port + ";database=" + database + ";user=" + user + ";password=" + password + ";";
             MySqlConnection con = new MySqlConnection(conStr);
@@ -215,10 +216,10 @@ namespace lab01
                     // find whether the file exists
                     if (fileinfo.Exists)
                     {
-                        int rows = intFileLines(filePath); // read the rows of txt
-                        string[] stringData = new string[100]; // string array used for storage
-                        readFileByLines(filePath, ref stringData, rows); // read txt data by lines
-                        photoOutput(rows, stringData); //create photoes
+                        int rows = IntFileLines(filePath); // read the rows of txt
+                        string[] stringData = new string[rows]; // string array used for storage
+                        ReadFileByLines(filePath, ref stringData, rows); // read txt data by lines
+                        PhotoOutput(rows, stringData); //create photoes
                     }
                     
                     else
@@ -245,17 +246,17 @@ namespace lab01
 
                     string[] stringData = new string[100]; // string array used for storage
                     int rows = 0; // number of string
-                    readDataFromSQL(server, port, database, user, password,table, ref stringData, ref rows);
-                    photoOutput(rows, stringData);
+                    ReadDataFromSQL(server, port, database, user, password,table, ref stringData, ref rows);
+                    PhotoOutput(rows, stringData);
                 }
                 
                 else if (startcommand.StartsWith("-EXCEL"))
                 {
                     string excelPath = startcommand.Substring(6);
-                    string[] stringData = new string[100]; // string array used for storage
                     int rows = 0; // number of string
-                    readDataFromExcel(excelPath, ref stringData, ref rows);
-                    photoOutput(rows, stringData);
+                    string[] stringData = new string[100]; // string array used for storage                    
+                    ReadDataFromExcel(excelPath, ref stringData, ref rows);
+                    PhotoOutput(rows, stringData);
                 }
 
                 else if (startcommand == "-help") // get help from readme.md, captial sensitive
